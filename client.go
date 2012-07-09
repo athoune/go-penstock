@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/binary"
+	"log"
 	"net"
 )
 
@@ -19,7 +20,7 @@ func NewClient(host string, port int) (c client, err error) {
 
 func (self *client) Write(target []byte, body []byte) error {
 	var err error
-	err = binary.Write(self.conn, binary.LittleEndian, len(target))
+	err = binary.Write(self.conn, binary.LittleEndian, (int32)(len(target)))
 	if err != nil {
 		return err
 	}
@@ -27,7 +28,8 @@ func (self *client) Write(target []byte, body []byte) error {
 	if err != nil {
 		return err
 	}
-	err = binary.Write(self.conn, binary.LittleEndian, len(body))
+	err = binary.Write(self.conn, binary.LittleEndian, (int32)(len(body)))
+	log.Println("size", len(body))
 	if err != nil {
 		return err
 	}

@@ -30,17 +30,19 @@ func NewServer(port int) (s server, err error) {
 }
 
 func handleConnection(conn net.Conn) {
-	var size int
+	var size int32
 	err := binary.Read(conn, binary.LittleEndian, &size)
-	log.Println(size)
-	target := make([]byte, size)
-	_, err = conn.Read(target)
+	log.Println("header size:", size)
+	if size > 0 {
+		target := make([]byte, size)
+		_, err = conn.Read(target)
+	}
 	err = binary.Read(conn, binary.LittleEndian, &size)
-	log.Println(size)
+	log.Println("body size:", size)
 	body := make([]byte, size)
 	_, err = conn.Read(body)
 	if err != nil {
-		log.Println(err)
+		log.Println("body error:", err)
 	}
-	log.Println(body)
+	log.Println("body:", body)
 }
