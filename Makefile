@@ -1,15 +1,18 @@
+include $(GOROOT)/src/Make.dist
 
 fmt:
 	go fmt
 
-client: fmt
-	go build penstock.go client.go
+protobuf:
+	protoc --go_out=. *.proto
 
-server: fmt
-	go build penstockd.go server.go
+client: protobuf fmt
+	go build penstock.go client.go header.pb.go
+
+server: protobuf fmt
+	go build penstockd.go server.go header.pb.go
 
 all: client server
 
-clean:
-	rm penstock penstockd
+include $(GOROOT)/src/pkg/code.google.com/p/goprotobuf/Make.protobuf
 

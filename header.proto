@@ -1,0 +1,18 @@
+package main;
+
+message Header {
+    enum Compression {
+        NONE = 0;
+        ZLIB = 1;
+        SNAPPY = 2;
+    }
+    enum Type {
+        QUERY = 0;
+        RESPONSE = 1;
+        EVENT = 2;
+    }
+    optional uint32 id = 1 [default = 0];
+    required bytes path = 2;
+    optional Compression compression = 3 [ default = NONE ];
+    optional Type type = 4 [ default = EVENT ];
+}

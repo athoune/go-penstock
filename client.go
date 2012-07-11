@@ -1,6 +1,7 @@
 package main
 
 import (
+	"code.google.com/p/goprotobuf/proto"
 	"encoding/binary"
 	"log"
 	"net"
@@ -18,8 +19,12 @@ func NewClient(host string, port int) (c client, err error) {
 	return client{conn}, nil
 }
 
-func (self *client) Write(target []byte, body []byte) error {
+func (self *client) Write(header *Header, body []byte) error {
 	var err error
+	target, err := proto.Marshal(header)
+	if err != nil {
+		return err
+	}
 	err = binary.Write(self.conn, binary.LittleEndian, (int32)(len(target)))
 	if err != nil {
 		return err

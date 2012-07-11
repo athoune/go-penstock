@@ -1,6 +1,7 @@
 package main
 
 import (
+	"code.google.com/p/goprotobuf/proto"
 	"encoding/binary"
 	"log"
 	"net"
@@ -34,8 +35,11 @@ func handleConnection(conn net.Conn) {
 	err := binary.Read(conn, binary.LittleEndian, &size)
 	log.Println("header size:", size)
 	if size > 0 {
-		target := make([]byte, size)
-		_, err = conn.Read(target)
+		header := &Header{}
+		data := make([]byte, size)
+		_, err = conn.Read(data)
+		err = proto.Unmarshal(data, header)
+		log.Println("Header:", header)
 	}
 	err = binary.Read(conn, binary.LittleEndian, &size)
 	log.Println("body size:", size)
