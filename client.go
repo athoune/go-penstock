@@ -41,8 +41,22 @@ func (self *client) Write(header *Header, body []byte) error {
 	return nil
 }
 
-type writer interface {
-	Write(b []byte) (n int, err error)
+type smallWriter struct {
+	max    int32
+	size   int32
+	writer io.Writer
+}
+
+func NewSmallWriter(size int32, writer io.Writer) *smallWriter {
+	return &smallWriter{size, 0, writer}
+}
+
+func (self *smallWriter) Write(p []byte) (n int, err error) {
+	if self.size+int32(len(p)) > self.max {
+		return int(self.size), *new(error) // "Too many stuff written")
+	}
+	self.size += int32(len(p))
+	return self.writer.Write(p)
 }
 
 func (self *client) NewWriter(header *Header) (w io.Writer, er error) {
@@ -59,6 +73,5 @@ func (self *client) NewWriter(header *Header) (w io.Writer, er error) {
 	if err != nil {
 		return nil, err
 	}
-	// [FIXME] the writer must whining when someone try to write more data than announced
-	return self.conn, nil
+	return NewSmallWriter(header.GetLength(), self.conn), nil
 }
