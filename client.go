@@ -24,18 +24,22 @@ func (self *client) Write(header *Header, body []byte) error {
 	var err error
 	target, err := proto.Marshal(header)
 	if err != nil {
+		self.conn.Close()
 		return err
 	}
 	err = binary.Write(self.conn, binary.LittleEndian, (int32)(len(target)))
 	if err != nil {
+		self.conn.Close()
 		return err
 	}
 	_, err = self.conn.Write(target)
 	if err != nil {
+		self.conn.Close()
 		return err
 	}
 	_, err = self.conn.Write(body)
 	if err != nil {
+		self.conn.Close()
 		return err
 	}
 	return nil
@@ -63,14 +67,17 @@ func (self *client) NewWriter(header *Header) (w io.Writer, er error) {
 	var err error
 	target, err := proto.Marshal(header)
 	if err != nil {
+		self.conn.Close()
 		return nil, err
 	}
 	err = binary.Write(self.conn, binary.LittleEndian, len(target))
 	if err != nil {
+		self.conn.Close()
 		return nil, err
 	}
 	_, err = self.conn.Write(target)
 	if err != nil {
+		self.conn.Close()
 		return nil, err
 	}
 	return NewSmallWriter(header.GetLength(), self.conn), nil
