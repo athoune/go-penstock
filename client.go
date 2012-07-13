@@ -8,19 +8,22 @@ import (
 )
 
 type client struct {
-	conn net.Conn
+	current_id uint32
+	conn       net.Conn
 }
 
-func NewClient(host string, port int) (c client, err error) {
+func NewClient(host string, port int) (c *client, err error) {
 	conn, err := net.Dial("tcp", "localhost:4807") //[FIXME] build address
 	if err != nil {
-		return client{nil}, err
+		return &client{0, nil}, err
 	}
-	return client{conn}, nil
+	return &client{0, conn}, nil
 }
 
 func (self *client) Write(header *Header, body []byte) error {
 	header.Length = proto.Int32(int32(len(body)))
+	self.current_id += 1
+	header.Id = proto.Uint32(self.current_id)
 	var err error
 	target, err := proto.Marshal(header)
 	if err != nil {
@@ -42,6 +45,7 @@ func (self *client) Write(header *Header, body []byte) error {
 		self.conn.Close()
 		return err
 	}
+	self.current_id += 1
 	return nil
 }
 
