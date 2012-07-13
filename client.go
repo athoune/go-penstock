@@ -3,6 +3,7 @@ package main
 import (
 	"code.google.com/p/goprotobuf/proto"
 	"encoding/binary"
+	"io"
 	"net"
 )
 
@@ -44,7 +45,7 @@ type writer interface {
 	Write(b []byte) (n int, err error)
 }
 
-func (self *client) NewWriter(header *Header) (w writer, er error) {
+func (self *client) NewWriter(header *Header) (w io.Writer, er error) {
 	var err error
 	target, err := proto.Marshal(header)
 	if err != nil {
