@@ -1,4 +1,6 @@
-include $(GOROOT)/src/Make.dist
+#include $(GOROOT)/src/Make.dist
+
+all: client server
 
 fmt:
 	go fmt
@@ -11,8 +13,3 @@ client: protobuf fmt
 
 server: protobuf fmt
 	go build penstockd.go server.go header.pb.go handler.go
-
-all: client server
-
-include $(GOROOT)/src/pkg/code.google.com/p/goprotobuf/Make.protobuf
-
