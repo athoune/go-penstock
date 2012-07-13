@@ -43,18 +43,21 @@ type Header_Type int32
 const (
 	Header_QUERY    Header_Type = 0
 	Header_RESPONSE Header_Type = 1
-	Header_EVENT    Header_Type = 2
+	Header_ERROR    Header_Type = 2
+	Header_EVENT    Header_Type = 3
 )
 
 var Header_Type_name = map[int32]string{
 	0: "QUERY",
 	1: "RESPONSE",
-	2: "EVENT",
+	2: "ERROR",
+	3: "EVENT",
 }
 var Header_Type_value = map[string]int32{
 	"QUERY":    0,
 	"RESPONSE": 1,
-	"EVENT":    2,
+	"ERROR":    2,
+	"EVENT":    3,
 }
 
 func (x Header_Type) Enum() *Header_Type {
@@ -71,7 +74,7 @@ type Header struct {
 	Path             []byte              `protobuf:"bytes,2,req,name=path" json:"path,omitempty"`
 	Length           *int32              `protobuf:"varint,3,req,name=length" json:"length,omitempty"`
 	Compression      *Header_Compression `protobuf:"varint,4,opt,name=compression,enum=main.Header_Compression,def=0" json:"compression,omitempty"`
-	Type             *Header_Type        `protobuf:"varint,5,opt,name=type,enum=main.Header_Type,def=2" json:"type,omitempty"`
+	Type             *Header_Type        `protobuf:"varint,5,opt,name=type,enum=main.Header_Type,def=3" json:"type,omitempty"`
 	XXX_unrecognized []byte              `json:"-"`
 }
 
