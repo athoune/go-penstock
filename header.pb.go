@@ -69,8 +69,9 @@ func (x Header_Type) String() string {
 type Header struct {
 	Id               *uint32             `protobuf:"varint,1,opt,name=id,def=0" json:"id,omitempty"`
 	Path             []byte              `protobuf:"bytes,2,req,name=path" json:"path,omitempty"`
-	Compression      *Header_Compression `protobuf:"varint,3,opt,name=compression,enum=main.Header_Compression,def=0" json:"compression,omitempty"`
-	Type             *Header_Type        `protobuf:"varint,4,opt,name=type,enum=main.Header_Type,def=2" json:"type,omitempty"`
+	Length           *int32              `protobuf:"varint,3,req,name=length" json:"length,omitempty"`
+	Compression      *Header_Compression `protobuf:"varint,4,opt,name=compression,enum=main.Header_Compression,def=0" json:"compression,omitempty"`
+	Type             *Header_Type        `protobuf:"varint,5,opt,name=type,enum=main.Header_Type,def=2" json:"type,omitempty"`
 	XXX_unrecognized []byte              `json:"-"`
 }
 
@@ -94,6 +95,13 @@ func (this *Header) GetPath() []byte {
 		return this.Path
 	}
 	return nil
+}
+
+func (this *Header) GetLength() int32 {
+	if this != nil && this.Length != nil {
+		return *this.Length
+	}
+	return 0
 }
 
 func (this *Header) GetCompression() Header_Compression {

@@ -34,15 +34,12 @@ func handleConnection(conn net.Conn) {
 	var size int32
 	err := binary.Read(conn, binary.LittleEndian, &size)
 	log.Println("header size:", size)
-	if size > 0 {
-		header := &Header{}
-		data := make([]byte, size)
-		_, err = conn.Read(data)
-		err = proto.Unmarshal(data, header)
-		log.Println("Header:", header)
-	}
-	err = binary.Read(conn, binary.LittleEndian, &size)
-	log.Println("body size:", size)
+	header := &Header{}
+	data := make([]byte, size)
+	_, err = conn.Read(data)
+	err = proto.Unmarshal(data, header)
+	log.Println("Header:", header)
+	size = *header.Length
 	body := make([]byte, size)
 	_, err = conn.Read(body)
 	if err != nil {

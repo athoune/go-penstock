@@ -13,6 +13,7 @@ message Header {
     }
     optional uint32 id = 1 [default = 0];
     required bytes path = 2;
-    optional Compression compression = 3 [ default = NONE ];
-    optional Type type = 4 [ default = EVENT ];
+    required int32 length = 3;
+    optional Compression compression = 4 [ default = NONE ];
+    optional Type type = 5 [ default = EVENT ];
 }

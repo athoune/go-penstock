@@ -3,7 +3,6 @@ package main
 import (
 	"code.google.com/p/goprotobuf/proto"
 	"encoding/binary"
-	"log"
 	"net"
 )
 
@@ -20,6 +19,7 @@ func NewClient(host string, port int) (c client, err error) {
 }
 
 func (self *client) Write(header *Header, body []byte) error {
+	header.Length = proto.Int32(int32(len(body)))
 	var err error
 	target, err := proto.Marshal(header)
 	if err != nil {
@@ -30,11 +30,6 @@ func (self *client) Write(header *Header, body []byte) error {
 		return err
 	}
 	_, err = self.conn.Write(target)
-	if err != nil {
-		return err
-	}
-	err = binary.Write(self.conn, binary.LittleEndian, (int32)(len(body)))
-	log.Println("size", len(body))
 	if err != nil {
 		return err
 	}
@@ -49,17 +44,17 @@ type writer interface {
 	Write(b []byte) (n int, err error)
 }
 
-func (self *client) NewWriter(target []byte, size int) (w writer, er error) {
+func (self *client) NewWriter(header *Header) (w writer, er error) {
 	var err error
+	target, err := proto.Marshal(header)
+	if err != nil {
+		return nil, err
+	}
 	err = binary.Write(self.conn, binary.LittleEndian, len(target))
 	if err != nil {
 		return nil, err
 	}
 	_, err = self.conn.Write(target)
-	if err != nil {
-		return nil, err
-	}
-	err = binary.Write(self.conn, binary.LittleEndian, size)
 	if err != nil {
 		return nil, err
 	}
