@@ -21,8 +21,10 @@ Features
  * _ Errors
  * _ Body compression
  * _ Body checksum
+ * _ Throttling
  * _ File transfert example
  * _ Protobuf RPC
+ * _ Client example in another language (python, nodejs…)
 
 Try it
 ------
@@ -33,6 +35,8 @@ Modify it
 ---------
 
 You should install [goprotobuf](https://code.google.com/p/goprotobuf/).
+
+A Makefile is used to handle compilation.
 
     make all
 
