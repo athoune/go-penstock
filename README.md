@@ -2,7 +2,7 @@ High pressure communication for Go
 ==================================
 
 Penstock is a low level tool to build event oriented communication in
-a connected socket. It borrows ideas from XMPP's IQ and JSON-RPC.
+a connected socket. It borrows ideas from XMPP's IQ, JSON-RPC, SPDY, HTTP.
 
 Penstock handles flow of bytes, so, it can be used to transfer files or
 use any serialized values.
