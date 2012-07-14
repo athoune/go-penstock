@@ -69,12 +69,35 @@ func (x Header_Type) String() string {
 	return proto.EnumName(Header_Type_name, int32(x))
 }
 
+type Header_Hash_Method int32
+
+const (
+	Header_Hash_MD5 Header_Hash_Method = 1
+)
+
+var Header_Hash_Method_name = map[int32]string{
+	1: "MD5",
+}
+var Header_Hash_Method_value = map[string]int32{
+	"MD5": 1,
+}
+
+func (x Header_Hash_Method) Enum() *Header_Hash_Method {
+	p := new(Header_Hash_Method)
+	*p = x
+	return p
+}
+func (x Header_Hash_Method) String() string {
+	return proto.EnumName(Header_Hash_Method_name, int32(x))
+}
+
 type Header struct {
 	Id               *uint32             `protobuf:"varint,1,opt,name=id,def=0" json:"id,omitempty"`
 	Path             []byte              `protobuf:"bytes,2,req,name=path" json:"path,omitempty"`
 	Length           *int32              `protobuf:"varint,3,req,name=length" json:"length,omitempty"`
 	Compression      *Header_Compression `protobuf:"varint,4,opt,name=compression,enum=main.Header_Compression,def=0" json:"compression,omitempty"`
 	Type             *Header_Type        `protobuf:"varint,5,opt,name=type,enum=main.Header_Type,def=3" json:"type,omitempty"`
+	Hash             *Header_Hash        `protobuf:"bytes,6,opt,name=hash" json:"hash,omitempty"`
 	XXX_unrecognized []byte              `json:"-"`
 }
 
@@ -121,7 +144,41 @@ func (this *Header) GetType() Header_Type {
 	return Default_Header_Type
 }
 
+func (this *Header) GetHash() *Header_Hash {
+	if this != nil {
+		return this.Hash
+	}
+	return nil
+}
+
+type Header_Hash struct {
+	Method           *Header_Hash_Method `protobuf:"varint,1,req,name=method,enum=main.Header_Hash_Method,def=1" json:"method,omitempty"`
+	Value            []byte              `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte              `json:"-"`
+}
+
+func (this *Header_Hash) Reset()         { *this = Header_Hash{} }
+func (this *Header_Hash) String() string { return proto.CompactTextString(this) }
+func (*Header_Hash) ProtoMessage()       {}
+
+const Default_Header_Hash_Method Header_Hash_Method = Header_Hash_MD5
+
+func (this *Header_Hash) GetMethod() Header_Hash_Method {
+	if this != nil && this.Method != nil {
+		return *this.Method
+	}
+	return Default_Header_Hash_Method
+}
+
+func (this *Header_Hash) GetValue() []byte {
+	if this != nil {
+		return this.Value
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterEnum("main.Header_Compression", Header_Compression_name, Header_Compression_value)
 	proto.RegisterEnum("main.Header_Type", Header_Type_name, Header_Type_value)
+	proto.RegisterEnum("main.Header_Hash_Method", Header_Hash_Method_name, Header_Hash_Method_value)
 }

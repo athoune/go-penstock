@@ -6,15 +6,26 @@ message Header {
         ZLIB = 1;
         SNAPPY = 2;
     }
+
     enum Type {
         QUERY = 0;
         RESPONSE = 1;
         ERROR = 2;
         EVENT = 3;
     }
+
+    message Hash {
+        enum Method {
+            MD5 = 1;
+        }
+        required Method method = 1 [ default = MD5 ];
+        required bytes value = 2;
+    }
+
     optional uint32 id = 1 [default = 0];
     required bytes path = 2;
     required int32 length = 3;
     optional Compression compression = 4 [ default = NONE ];
     optional Type type = 5 [ default = EVENT ];
+    optional Hash hash = 6;
 }
