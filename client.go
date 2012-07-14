@@ -49,40 +49,28 @@ func (self *client) Write(header *Header, body []byte) error {
 	return nil
 }
 
-type smallWriter struct {
-	max    int32
-	size   int32
-	writer io.Writer
-}
-
-func NewSmallWriter(size int32, writer io.Writer) *smallWriter {
-	return &smallWriter{size, 0, writer}
-}
-
-func (self *smallWriter) Write(p []byte) (n int, err error) {
-	if self.size+int32(len(p)) > self.max {
-		return int(self.size), *new(error) // "Too many stuff written")
-	}
-	self.size += int32(len(p))
-	return self.writer.Write(p)
-}
-
-func (self *client) NewWriter(header *Header) (w io.Writer, er error) {
-	var err error
+func (self *client) Copy(header *Header, reader *io.Reader) error {
+	length := header.GetLength()
 	target, err := proto.Marshal(header)
 	if err != nil {
 		self.conn.Close()
-		return nil, err
+		return err
 	}
 	err = binary.Write(self.conn, binary.LittleEndian, len(target))
 	if err != nil {
 		self.conn.Close()
-		return nil, err
+		return err
 	}
 	_, err = self.conn.Write(target)
 	if err != nil {
 		self.conn.Close()
-		return nil, err
+		return err
 	}
-	return NewSmallWriter(header.GetLength(), self.conn), nil
+	r := io.LimitReader(*reader, int64(length))
+	_, err = io.Copy(self.conn, r)
+	if err != nil {
+		self.conn.Close()
+		return err
+	}
+	return nil
 }
