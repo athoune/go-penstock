@@ -12,4 +12,4 @@ client: protobuf fmt
 	go build penstock.go client.go header.pb.go
 
 server: protobuf fmt
-	go build penstockd.go server.go header.pb.go handler.go
+	go build penstockd.go server.go header.pb.go handler.go message.go

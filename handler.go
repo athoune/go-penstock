@@ -1,21 +1,20 @@
 package main
 
 import (
-	"io"
 	"log"
 )
 
 type Handler interface {
-	Handle(header *Header, body io.Reader)
+	Handle(message Message)
 }
 
 type DebugHandler struct {
 }
 
-func (self *DebugHandler) Handle(header *Header, body io.Reader) {
-	log.Println("header:", header)
-	data := make([]byte, header.GetLength())
-	_, err := body.Read(data)
+func (self *DebugHandler) Handle(message Message) {
+	log.Println("header:", message.Header)
+	data := make([]byte, message.Header.GetLength())
+	_, err := message.Body.Read(data)
 	if err != nil {
 		log.Println("body error:", err)
 	}

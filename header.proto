@@ -16,7 +16,7 @@ message Header {
 
     message Hash {
         enum Method {
-            MD5 = 1;
+            MD5 = 0;
         }
         required Method method = 1 [ default = MD5 ];
         required bytes value = 2;

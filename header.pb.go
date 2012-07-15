@@ -72,14 +72,14 @@ func (x Header_Type) String() string {
 type Header_Hash_Method int32
 
 const (
-	Header_Hash_MD5 Header_Hash_Method = 1
+	Header_Hash_MD5 Header_Hash_Method = 0
 )
 
 var Header_Hash_Method_name = map[int32]string{
-	1: "MD5",
+	0: "MD5",
 }
 var Header_Hash_Method_value = map[string]int32{
-	"MD5": 1,
+	"MD5": 0,
 }
 
 func (x Header_Hash_Method) Enum() *Header_Hash_Method {
@@ -152,7 +152,7 @@ func (this *Header) GetHash() *Header_Hash {
 }
 
 type Header_Hash struct {
-	Method           *Header_Hash_Method `protobuf:"varint,1,req,name=method,enum=main.Header_Hash_Method,def=1" json:"method,omitempty"`
+	Method           *Header_Hash_Method `protobuf:"varint,1,req,name=method,enum=main.Header_Hash_Method,def=0" json:"method,omitempty"`
 	Value            []byte              `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
 	XXX_unrecognized []byte              `json:"-"`
 }
