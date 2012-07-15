@@ -45,7 +45,6 @@ func (self *client) Write(header *Header, body []byte) error {
 		self.conn.Close()
 		return err
 	}
-	self.current_id += 1
 	return nil
 }
 

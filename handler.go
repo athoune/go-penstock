@@ -11,7 +11,7 @@ type Handler interface {
 type DebugHandler struct {
 }
 
-func (self *DebugHandler) Handle(message Message) {
+func (self *DebugHandler) Handle(message *Message) {
 	log.Println("header:", message.Header)
 	data := make([]byte, message.Header.GetLength())
 	_, err := message.Body.Read(data)

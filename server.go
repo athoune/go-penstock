@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"log"
 	"net"
 )
@@ -30,9 +31,17 @@ func NewServer(port int) (s server, err error) {
 
 func handleConnection(conn net.Conn) {
 	handler := new(DebugHandler)
-	message, err := ReadMessage(conn)
-	if err != nil {
-		log.Println(err)
+	loop := true
+	for loop {
+		message, err := ReadMessage(conn)
+		if err != nil {
+			if err != io.EOF {
+				log.Println("Error while reading message", err)
+			}
+			loop = false
+			conn.Close()
+		} else {
+			handler.Handle(message)
+		}
 	}
-	handler.Handle(message)
 }

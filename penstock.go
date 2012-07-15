@@ -18,4 +18,8 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+	err = client.Write(header, []byte("world!"))
+	if err != nil {
+		log.Panic(err)
+	}
 }
