@@ -1,9 +1,6 @@
 package main
 
 import (
-	"code.google.com/p/goprotobuf/proto"
-	"encoding/binary"
-	"io"
 	"net"
 )
 
@@ -17,71 +14,11 @@ func NewClient(host string, port int) (c *client, err error) {
 	if err != nil {
 		return &client{0, nil}, err
 	}
+	handler := DebugHandler{}
+	go ReadLoop(conn, handler)
 	return &client{0, conn}, nil
 }
 
-func (self *client) Write(header *Header, body []byte) error {
-	header.Length = proto.Int32(int32(len(body)))
-	self.current_id += 1
-	header.Id = proto.Uint32(self.current_id)
-	var err error
-	target, err := proto.Marshal(header)
-	if err != nil {
-		self.conn.Close()
-		return err
-	}
-	err = binary.Write(self.conn, binary.LittleEndian, (int32)(len(target)))
-	if err != nil {
-		self.conn.Close()
-		return err
-	}
-	_, err = self.conn.Write(target)
-	if err != nil {
-		self.conn.Close()
-		return err
-	}
-	_, err = self.conn.Write(body)
-	if err != nil {
-		self.conn.Close()
-		return err
-	}
-	return nil
-}
-
-type Error string
-
-func (e Error) Error() string {
-	return string(e)
-}
-
-// Copy the content of the reader. Be careful, only length announced in the header
-// will be copied.
-func (self *client) Copy(header *Header, reader *io.Reader) error {
-	length := int64(header.GetLength())
-	target, err := proto.Marshal(header)
-	if err != nil {
-		self.conn.Close()
-		return err
-	}
-	err = binary.Write(self.conn, binary.LittleEndian, len(target))
-	if err != nil {
-		self.conn.Close()
-		return err
-	}
-	_, err = self.conn.Write(target)
-	if err != nil {
-		self.conn.Close()
-		return err
-	}
-	r := io.LimitReader(*reader, length)
-	var real_size int64
-	real_size, err = io.Copy(self.conn, r)
-	if err != nil {
-		self.conn.Close()
-		return err
-	}
-	if real_size < length {
-		return Error("Length is bigger than reader capacity")
-	}
-	return nil
+func (self *client) Write(message *Message) error {
+	return WriteMessage(self.conn, message)
 }

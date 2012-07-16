@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"log"
 	"net"
 )
@@ -16,6 +15,7 @@ func NewServer(port int) (s server, err error) {
 		return server{nil}, err
 	}
 	log.Println("Starting the server")
+	handler := new(DebugHandler)
 	// [FIXME] handles loop and listen a chan for stopping.
 	for {
 		conn, err := ln.Accept()
@@ -24,24 +24,7 @@ func NewServer(port int) (s server, err error) {
 			continue
 		}
 		log.Println("Handling a connection")
-		go handleConnection(conn)
+		go ReadLoop(conn, handler)
 	}
 	return server{ln}, nil
-}
-
-func handleConnection(conn net.Conn) {
-	handler := new(DebugHandler)
-	loop := true
-	for loop {
-		message, err := ReadMessage(conn)
-		if err != nil {
-			if err != io.EOF {
-				log.Println("Error while reading message", err)
-			}
-			loop = false
-			conn.Close()
-		} else {
-			handler.Handle(message)
-		}
-	}
 }

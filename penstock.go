@@ -14,11 +14,11 @@ func main() {
 		Path: []byte("some/path"),
 	}
 	log.Println(header)
-	err = client.Write(header, []byte("hello"))
+	err = client.Write(NewBytesMessage(header, []byte("hello")))
 	if err != nil {
 		log.Panic(err)
 	}
-	err = client.Write(header, []byte("world!"))
+	err = client.Write(NewBytesMessage(header, []byte("world!")))
 	if err != nil {
 		log.Panic(err)
 	}
