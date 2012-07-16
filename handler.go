@@ -27,8 +27,9 @@ type AckHandler struct {
 }
 
 func (self AckHandler) Handle(message *Message) {
-	/*data := make([]byte, message.Header.GetLength())*/
-	/*_, err := message.Body.Read(data)*/
+	data := make([]byte, message.Header.GetLength())
+	_, _ = message.Body.Read(data)
+	log.Println("body:", data)
 	header := &Header{Path: message.Header.GetPath()}
 	WriteMessage(self.conn, NewBytesMessage(header, []byte("ok")))
 }
