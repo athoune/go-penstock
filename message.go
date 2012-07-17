@@ -14,6 +14,7 @@ type Message struct {
 	Body io.Reader
 }
 
+// Read the body of a message.
 func (self Message) Read() (body []byte, err error) {
 	body = make([]byte, self.Header.GetLength())
 	_, err = self.Body.Read(body)
@@ -23,11 +24,13 @@ func (self Message) Read() (body []byte, err error) {
 	return
 }
 
+// Helper to build a message from a []byte, not a reader.
 func NewBytesMessage(header *Header, body []byte) *Message {
 	header.Length = proto.Int32(int32(len(body)))
 	return &Message{header, bytes.NewBuffer(body)}
 }
 
+// Read and parse one message.
 func ReadMessage(conn io.Reader) (message *Message, err error) {
 	var size int32
 	err = binary.Read(conn, binary.LittleEndian, &size)
@@ -86,6 +89,8 @@ func WriteMessage(conn net.Conn, message *Message) error {
 
 }
 
+// Read sequentialy all messages in a connection.
+// Each messages are handled by and handler.
 func ReadLoop(conn net.Conn, handler Handler) {
 	loop := true
 	for loop {
