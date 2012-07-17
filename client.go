@@ -7,16 +7,19 @@ import (
 type client struct {
 	current_id uint32
 	conn       net.Conn
+	response   chan CompleteMessage
 }
 
 func NewClient(host string, port int) (c *client, err error) {
 	conn, err := net.Dial("tcp", "localhost:4807") //[FIXME] build address
 	if err != nil {
-		return &client{0, nil}, err
+		return &client{0, nil, nil}, err
 	}
-	handler := DebugHandler{}
+	c = &client{0, conn, make(chan CompleteMessage)}
+	response := c.response
+	handler := ChanHandler{response}
 	go ReadLoop(conn, handler)
-	return &client{0, conn}, nil
+	return
 }
 
 func (self *client) Write(message *Message) error {

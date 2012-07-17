@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"log"
 )
 
@@ -21,5 +22,11 @@ func main() {
 	err = client.Write(NewBytesMessage(header, []byte("world!")))
 	if err != nil {
 		log.Panic(err)
+	}
+	var msg CompleteMessage
+	for {
+		msg = <-client.response
+		b := bytes.NewBuffer(msg.Body)
+		log.Println("Response:", msg.Header, b.String())
 	}
 }

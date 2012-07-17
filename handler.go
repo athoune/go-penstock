@@ -27,9 +27,34 @@ type AckHandler struct {
 }
 
 func (self AckHandler) Handle(message *Message) {
+	r := Header_RESPONSE
 	data := make([]byte, message.Header.GetLength())
 	_, _ = message.Body.Read(data)
 	log.Println("body:", data)
-	header := &Header{Path: message.Header.GetPath()}
+	header := &Header{
+		Id:   message.Header.Id,
+		Path: message.Header.GetPath(),
+		Type: &r,
+	}
 	WriteMessage(self.conn, NewBytesMessage(header, []byte("ok")))
+}
+
+type CompleteMessage struct {
+	Header *Header
+	Body   []byte
+}
+
+func NewCompleteMessage(source *Message) (complete *CompleteMessage, err error) {
+	data := make([]byte, source.Header.GetLength())
+	_, err = source.Body.Read(data)
+	return &CompleteMessage{source.Header, data}, nil
+}
+
+type ChanHandler struct {
+	response chan CompleteMessage
+}
+
+func (self ChanHandler) Handle(message *Message) {
+	complete, _ := NewCompleteMessage(message)
+	self.response <- *complete
 }

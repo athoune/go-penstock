@@ -14,6 +14,15 @@ type Message struct {
 	Body io.Reader
 }
 
+func (self Message) Read() (body []byte, err error) {
+	body = make([]byte, self.Header.GetLength())
+	_, err = self.Body.Read(body)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
 func NewBytesMessage(header *Header, body []byte) *Message {
 	header.Length = proto.Int32(int32(len(body)))
 	return &Message{header, bytes.NewBuffer(body)}
